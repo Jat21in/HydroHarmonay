@@ -1,0 +1,42 @@
+import matplotlib.pyplot as plt
+from sklearn.metrics import r2_score
+import numpy as np
+
+# Example actual test labels
+y_test = np.array([3.5, 4.5, 5.0, 6.0, 7.5])
+
+# Example model predictions
+regression_predictions = np.array([3.2, 4.0, 4.8, 5.5, 7.0])
+svm_predictions = np.array([3.0, 4.2, 4.5, 5.8, 7.2])
+rf_predictions = np.array([3.4, 4.3, 4.9, 5.7, 7.3])
+
+# Function to plot actual vs. predicted values
+def plot_predictions(y_true, y_pred, model_name):
+    plt.figure(figsize=(8, 6))
+    plt.scatter(y_true, y_pred, color='blue')
+    plt.plot([min(y_true), max(y_true)], [min(y_true), max(y_true)], color='red', linestyle='--')
+    plt.xlabel('Actual Values')
+    plt.ylabel('Predicted Values')
+    plt.title(f'Actual vs. Predicted Values ({model_name})')
+    plt.grid(True)
+    plt.show()
+
+# Calculate R-squared score for each model
+r2_linear = r2_score(y_test, regression_predictions)
+r2_svm = r2_score(y_test, svm_predictions)
+r2_rf = r2_score(y_test, rf_predictions)
+
+# Plot actual vs. predicted values for each model
+plot_predictions(y_test, regression_predictions, 'Linear Regression')
+plot_predictions(y_test, svm_predictions, 'SVM')
+plot_predictions(y_test, rf_predictions, 'Random Forest')
+
+# Print R-squared score for each model
+print(f'R-squared Score (Linear Regression): {r2_linear}')
+print(f'R-squared Score (SVM): {r2_svm}')
+print(f'R-squared Score (Random Forest): {r2_rf}')
+
+# Determine the best model based on R-squared score
+r2_dict = {'Linear Regression': r2_linear, 'SVM': r2_svm, 'Random Forest': r2_rf}
+best_model = max(r2_dict, key=r2_dict.get)
+print(f'Best Model: {best_model} (R-squared Score: {r2_dict[best_model]})')
