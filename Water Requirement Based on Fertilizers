@@ -1,0 +1,107 @@
+def check_rainfall_suitability(nitrogen, potassium, phosphorus, temperature, ph_value, humidity, rainfall):
+    # Define threshold values for each parameter
+    nitrogen_threshold = 10  # Example threshold for nitrogen
+    potassium_threshold = 5  # Example threshold for potassium
+    phosphorus_threshold = 3  # Example threshold for phosphorus
+    temperature_threshold = 25  # Example threshold for temperature
+    ph_threshold = 6.5  # Example threshold for pH
+    humidity_threshold = 60  # Example threshold for humidity
+
+    # Check if all parameters meet their respective threshold values
+    if (nitrogen >= nitrogen_threshold and
+        potassium >= potassium_threshold and
+        phosphorus >= phosphorus_threshold and
+        temperature <= temperature_threshold and
+        ph_value >= ph_threshold and
+        humidity >= humidity_threshold):
+
+        if rainfall >= 75:
+            return "Rainfall is suitable for the given parameters."
+        else:
+            return "Rainfall is not sufficient for the given parameters."
+    else:
+        return "Input parameters do not meet the required thresholds for agricultural suitability."
+
+nitrogen_value = float(input("Enter nitrogen value: "))
+potassium_value = float(input("Enter potassium value: "))
+phosphorus_value = float(input("Enter phosphorus value: "))
+temperature_value = float(input("Enter temperature value: "))
+ph_value = float(input("Enter pH value: "))
+humidity_value = float(input("Enter humidity value: "))
+rainfall_value = float(input("Enter rainfall value: "))
+
+result = check_rainfall_suitability(nitrogen_value, potassium_value, phosphorus_value, temperature_value, ph_value, humidity_value, rainfall_value)
+print(result)
+
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.svm import SVR
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_error
+
+# Read the dataset
+df = pd.read_csv('/content/1st Model Data Set (RICE).csv')
+
+# Assuming the dataset has columns for nitrogen, potassium, phosphorus, temperature, pH, humidity, and rainfall
+# Define features (X) and target variable (y)
+X = df[['N', 'K', 'P', 'temperature', 'ph', 'humidity']].values
+y = df['Water Requirement'].values
+
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Standardize or normalize numerical features
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Train the linear regression model
+regression_model = LinearRegression()
+regression_model.fit(X_train, y_train)
+
+# Train the SVM model
+svm_model = SVR(kernel='linear')
+svm_model.fit(X_train_scaled, y_train)
+
+# Train the Random Forest model
+rf_model = RandomForestRegressor(random_state=42)
+rf_model.fit(X_train, y_train)
+
+# Function to predict rainfall using linear regression model
+def predict_rainfall_linear(nitrogen, phosphorus, potassium, temperature, ph_value, humidity):
+    input_data = np.array([[nitrogen, phosphorus, potassium, temperature, ph_value, humidity]])
+    predicted_rainfall = regression_model.predict(input_data)
+    return predicted_rainfall[0]
+
+# Function to predict rainfall using SVM model
+def predict_rainfall_svm(nitrogen, phosphorus, potassium, temperature, ph_value, humidity):
+    input_data = np.array([[nitrogen, phosphorus, potassium, temperature, ph_value, humidity]])
+    input_data_scaled = scaler.transform(input_data)
+    predicted_rainfall_svm = svm_model.predict(input_data_scaled)
+    return predicted_rainfall_svm[0]
+
+# Function to predict rainfall using Random Forest model
+def predict_rainfall_rf(nitrogen, phosphorus, potassium, temperature, ph_value, humidity):
+    input_data = np.array([[nitrogen, phosphorus, potassium, temperature, ph_value, humidity]])
+    predicted_rainfall_rf = rf_model.predict(input_data)
+    return predicted_rainfall_rf[0]
+
+# Example usage
+nitrogen_value = float(input("Enter nitrogen value: "))
+phosphorus_value = float(input("Enter phosphorus value: "))
+potassium_value = float(input("Enter potassium value: "))
+temperature_value = float(input("Enter temperature value: "))
+humidity_value = float(input("Enter humidity value: "))
+ph_value = float(input("Enter pH value:"))
+
+predicted_rainfall_linear = predict_rainfall_linear(nitrogen_value, phosphorus_value, potassium_value, temperature_value, ph_value, humidity_value)
+print("Predicted rainfall (Linear Regression):", predicted_rainfall_linear)
+
+predicted_rainfall_svm = predict_rainfall_svm(nitrogen_value, phosphorus_value, potassium_value, temperature_value, ph_value, humidity_value)
+print("Predicted rainfall (SVM):", predicted_rainfall_svm)
+
+predicted_rainfall_rf = predict_rainfall_rf(nitrogen_value, phosphorus_value, potassium_value, temperature_value, ph_value, humidity_value)
+print("Predicted rainfall (Random Forest):", predicted_rainfall_rf)
